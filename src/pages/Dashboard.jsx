@@ -18,7 +18,21 @@ export default function Dashboard() {
           <div className="mono" style={{ fontSize: 11, letterSpacing: '0.15em', color: '#6B7891', marginBottom: 4 }}>DASHBOARD</div>
           <h1 style={{ fontSize: 32, fontWeight: 600, margin: 0, letterSpacing: '-0.01em' }}>ภาพรวมระบบ</h1>
         </div>
-        <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>16 มิ.ย. 2026 · อังคาร</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <Link to="/" style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            padding: '8px 16px', borderRadius: 8,
+            border: '1px solid #E4E8EE', background: '#FFF',
+            color: '#0B1F3A', fontSize: 13, fontWeight: 500,
+            textDecoration: 'none', transition: 'background 0.15s',
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = '#F4F5F7'}
+            onMouseLeave={e => e.currentTarget.style.background = '#FFF'}
+          >
+            ← กลับหน้าหลัก
+          </Link>
+          <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>16 มิ.ย. 2026 · อังคาร</div>
+        </div>
       </div>
 
       {/* Stat widgets */}

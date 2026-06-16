@@ -42,14 +42,28 @@ export default function AdminLogin() {
       padding: 24,
     }}>
       {/* Logo */}
-      <Link to="/" style={{ textDecoration: 'none', marginBottom: 40, display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{
-          width: 36, height: 36, background: '#E0A800', borderRadius: 8,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          color: '#0B1F3A', fontWeight: 700, fontSize: 14,
-        }}>SB</div>
-        <span style={{ color: '#FFF', fontWeight: 700, fontSize: 18, letterSpacing: '0.05em' }}>SOLID BUILD</span>
-      </Link>
+      <div style={{ marginBottom: 40, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{
+            width: 36, height: 36, background: '#E0A800', borderRadius: 8,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#0B1F3A', fontWeight: 700, fontSize: 14,
+          }}>SB</div>
+          <span style={{ color: '#FFF', fontWeight: 700, fontSize: 18, letterSpacing: '0.05em' }}>SOLID BUILD</span>
+        </Link>
+        <Link to="/" style={{
+          display: 'flex', alignItems: 'center', gap: 6,
+          padding: '7px 16px', borderRadius: 8,
+          border: '1px solid #1F3358', background: 'transparent',
+          color: '#8FA0BD', fontSize: 13,
+          textDecoration: 'none', transition: 'all 0.15s',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.background = '#1F3358'; e.currentTarget.style.color = '#FFF' }}
+          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#8FA0BD' }}
+        >
+          ← กลับหน้าหลัก
+        </Link>
+      </div>
 
       {/* Card */}
       <div style={{

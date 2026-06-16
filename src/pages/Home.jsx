@@ -62,7 +62,7 @@ export default function Home() {
           }}>SB</div>
           <span style={{ color: '#FFF', fontWeight: 700, fontSize: 16, letterSpacing: '0.05em' }}>SOLID BUILD</span>
         </div>
-        <nav style={{ display: 'flex', gap: 32 }}>
+        {/* <nav style={{ display: 'flex', gap: 32 }}>
           {['บริการ', 'ผลงาน', 'ติดต่อเรา'].map(item => (
             <a key={item} href={`#${item}`} style={{
               color: '#B8C4DA', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s',
@@ -71,7 +71,7 @@ export default function Home() {
               onMouseLeave={e => e.target.style.color = '#B8C4DA'}
             >{item}</a>
           ))}
-        </nav>
+        </nav> */}
         <Link to="/admin" style={{
           background: '#E0A800', color: '#0B1F3A', fontWeight: 600,
           padding: '8px 20px', borderRadius: 6, fontSize: 14, textDecoration: 'none',
