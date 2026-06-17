@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 import { useState, useEffect } from 'react'
+=======
+import { useEffect, useState } from 'react'
+>>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
 import { Link } from 'react-router-dom'
+import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
+import { db } from '../firebase'
 
 const STATUS_STYLE = {
   'กำลังดำเนินการ': { stBg: '#E8EDF5', stColor: '#0B1F3A' },
@@ -26,7 +32,17 @@ function loadLS(key, fallback) {
   } catch (_) { return fallback }
 }
 
+function isToday(ts) {
+  if (!ts) return false
+  const d = ts.toDate ? ts.toDate() : new Date(ts)
+  const now = new Date()
+  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()
+}
+
+const TODAY = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' })
+
 export default function Dashboard() {
+<<<<<<< HEAD
   const [projects, setProjects] = useState([])
   const [poRecords, setPoRecords] = useState([])
 
@@ -51,6 +67,18 @@ export default function Dashboard() {
   const recent = [...projects].sort((a, b) => b.id - a.id).slice(0, 5)
 
   const today = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' })
+=======
+  const [leads, setLeads] = useState([])
+
+  useEffect(() => {
+    const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'))
+    return onSnapshot(q, snap => setLeads(snap.docs.map(d => ({ id: d.id, ...d.data() }))))
+  }, [])
+
+  const todayLeads = leads.filter(l => isToday(l.createdAt))
+  const todayContacted = todayLeads.filter(l => l.status === 'ติดต่อแล้ว').length
+  const todayPending = todayLeads.filter(l => l.status === 'ยังไม่ติดต่อ').length
+>>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
 
   return (
     <main style={{ padding: '32px 40px' }}>
@@ -73,12 +101,17 @@ export default function Dashboard() {
           >
             ← กลับหน้าหลัก
           </Link>
+<<<<<<< HEAD
           <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>{today}</div>
+=======
+          <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>{TODAY}</div>
+>>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
         </div>
       </div>
 
       {/* Stat widgets */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
+<<<<<<< HEAD
         <Widget
           label="โครงการกำลังดำเนินการ"
           value={String(activeCount)}
@@ -100,6 +133,12 @@ export default function Dashboard() {
           sub={`ใช้ไป ${fmtBudget(projects.reduce((s, p) => s + (p.budgetUsed || 0), 0))}`}
           dark
         />
+=======
+        <Widget label="โครงการกำลังดำเนินการ" value="8" sub="+2 จากเดือนที่แล้ว" />
+        <Widget label="เบิกจ่ายรอดำเนินการ" value="฿245,800" sub="5 รายการ" />
+        <Widget label="PO รออนุมัติ" value="12" sub="รวม ฿1.2M" />
+        <Widget label="LEAD ใหม่วันนี้" value={todayLeads.length} sub={`ติดต่อแล้ว ${todayContacted} · รออีก ${todayPending}`} dark />
+>>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
       </div>
 
       {/* Recent projects */}
