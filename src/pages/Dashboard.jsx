@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { useState, useEffect } from 'react'
-=======
-import { useEffect, useState } from 'react'
->>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
 import { Link } from 'react-router-dom'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../firebase'
@@ -42,9 +38,9 @@ function isToday(ts) {
 const TODAY = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' })
 
 export default function Dashboard() {
-<<<<<<< HEAD
   const [projects, setProjects] = useState([])
   const [poRecords, setPoRecords] = useState([])
+  const [leads, setLeads] = useState([])
 
   useEffect(() => {
     setProjects(loadLS('sb_projects_v1', []))
@@ -58,27 +54,22 @@ export default function Dashboard() {
     return () => window.removeEventListener('storage', onStorage)
   }, [])
 
+  useEffect(() => {
+    const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'))
+    return onSnapshot(q, snap => setLeads(snap.docs.map(d => ({ id: d.id, ...d.data() }))))
+  }, [])
+
   const activeCount = projects.filter(p => p.status === 'กำลังดำเนินการ').length
   const poWaiting = poRecords.filter(r => r.status === 'รออนุมัติ').length
   const poWaitingTotal = poRecords
     .filter(r => r.status === 'รออนุมัติ')
     .reduce((s, r) => s + (parseFloat((r.total || '0').replace(/,/g, '')) || 0), 0)
 
-  const recent = [...projects].sort((a, b) => b.id - a.id).slice(0, 5)
-
-  const today = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' })
-=======
-  const [leads, setLeads] = useState([])
-
-  useEffect(() => {
-    const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'))
-    return onSnapshot(q, snap => setLeads(snap.docs.map(d => ({ id: d.id, ...d.data() }))))
-  }, [])
-
   const todayLeads = leads.filter(l => isToday(l.createdAt))
-  const todayContacted = todayLeads.filter(l => l.status === 'ติดต่อแล้ว').length
   const todayPending = todayLeads.filter(l => l.status === 'ยังไม่ติดต่อ').length
->>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
+  const todayContacted = todayLeads.filter(l => l.status === 'ติดต่อแล้ว').length
+
+  const recent = [...projects].sort((a, b) => b.id - a.id).slice(0, 5)
 
   return (
     <main style={{ padding: '32px 40px' }}>
@@ -101,17 +92,12 @@ export default function Dashboard() {
           >
             ← กลับหน้าหลัก
           </Link>
-<<<<<<< HEAD
-          <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>{today}</div>
-=======
           <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>{TODAY}</div>
->>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
         </div>
       </div>
 
       {/* Stat widgets */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
-<<<<<<< HEAD
         <Widget
           label="โครงการกำลังดำเนินการ"
           value={String(activeCount)}
@@ -128,17 +114,11 @@ export default function Dashboard() {
           sub={poWaiting > 0 ? `รวม ${fmtBudget(poWaitingTotal)}` : 'ไม่มีรอดำเนินการ'}
         />
         <Widget
-          label="งบรวมทุกโครงการ"
-          value={fmtBudget(projects.reduce((s, p) => s + (p.budgetTotal || 0), 0))}
-          sub={`ใช้ไป ${fmtBudget(projects.reduce((s, p) => s + (p.budgetUsed || 0), 0))}`}
+          label="LEAD ใหม่วันนี้"
+          value={String(todayLeads.length)}
+          sub={`ติดต่อแล้ว ${todayContacted} · รออีก ${todayPending}`}
           dark
         />
-=======
-        <Widget label="โครงการกำลังดำเนินการ" value="8" sub="+2 จากเดือนที่แล้ว" />
-        <Widget label="เบิกจ่ายรอดำเนินการ" value="฿245,800" sub="5 รายการ" />
-        <Widget label="PO รออนุมัติ" value="12" sub="รวม ฿1.2M" />
-        <Widget label="LEAD ใหม่วันนี้" value={todayLeads.length} sub={`ติดต่อแล้ว ${todayContacted} · รออีก ${todayPending}`} dark />
->>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
       </div>
 
       {/* Recent projects */}
