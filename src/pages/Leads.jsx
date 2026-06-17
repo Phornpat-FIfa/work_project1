@@ -133,8 +133,6 @@ export default function Leads() {
 
   return (
     <main style={{ padding: '32px 40px' }}>
-<<<<<<< HEAD
-=======
       {selected && (
         <DetailModal
           lead={selected}
@@ -142,17 +140,12 @@ export default function Leads() {
           onMarkContacted={markContacted}
         />
       )}
->>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <div className="mono" style={{ fontSize: 11, letterSpacing: '0.15em', color: '#6B7891', marginBottom: 4 }}>LEADS · FROM LANDING PAGE</div>
           <h1 style={{ fontSize: 32, fontWeight: 600, margin: 0, letterSpacing: '-0.01em' }}>Lead ลูกค้า</h1>
         </div>
-<<<<<<< HEAD
-        {/* <button style={{ padding: '10px 16px', background: '#FFF', color: '#0B1F3A', border: '1px solid #E4E8EE', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>↓ Export</button> */}
-=======
->>>>>>> 8efae27ae02777fab982d43c57afbb5bfd2aff8e
       </div>
 
       {/* Stats */}
