@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom'
 
 const SERVICES = [
   {
-    icon: '🏠',
+    img: 'https://picsum.photos/seed/house-new/600/338',
     title: 'สร้างบ้านใหม่',
     desc: 'รับสร้างบ้านพักอาศัยทุกแบบ ควบคุมคุณภาพทุกขั้นตอน ด้วยทีมช่างมืออาชีพ',
   },
   {
-    icon: '🔨',
+    img: 'https://picsum.photos/seed/extension/600/338',
     title: 'ต่อเติม',
     desc: 'ต่อเติมห้อง ระเบียง ครัว หรือพื้นที่ใช้สอย ออกแบบให้กลมกลืนกับโครงสร้างเดิม',
   },
   {
-    icon: '✨',
+    img: 'https://picsum.photos/seed/renovate/600/338',
     title: 'รีโนเวท',
     desc: 'ปรับปรุงซ่อมแซมบ้านเก่าให้ดูใหม่ เปลี่ยนสไตล์ตามที่ต้องการ ราคาคุ้มค่า',
   },
@@ -62,7 +62,7 @@ export default function Home() {
           }}>SB</div>
           <span style={{ color: '#FFF', fontWeight: 700, fontSize: 16, letterSpacing: '0.05em' }}>SOLID BUILD</span>
         </div>
-        {/* <nav style={{ display: 'flex', gap: 32 }}>
+        <nav style={{ display: 'flex', gap: 32 }}>
           {['บริการ', 'ผลงาน', 'ติดต่อเรา'].map(item => (
             <a key={item} href={`#${item}`} style={{
               color: '#B8C4DA', fontSize: 14, textDecoration: 'none', transition: 'color 0.2s',
@@ -71,7 +71,7 @@ export default function Home() {
               onMouseLeave={e => e.target.style.color = '#B8C4DA'}
             >{item}</a>
           ))}
-        </nav> */}
+        </nav>
         <Link to="/admin" style={{
           background: '#E0A800', color: '#0B1F3A', fontWeight: 600,
           padding: '8px 20px', borderRadius: 6, fontSize: 14, textDecoration: 'none',
@@ -127,11 +127,7 @@ export default function Home() {
               padding: '14px 32px', borderRadius: 8, fontSize: 16, textDecoration: 'none',
               display: 'inline-block',
             }}>ปรึกษาฟรี ไม่มีค่าใช้จ่าย</a>
-            <a href="#services" style={{
-              border: '1px solid #3A537A', color: '#B8C4DA',
-              padding: '14px 32px', borderRadius: 8, fontSize: 16, textDecoration: 'none',
-              display: 'inline-block',
-            }}>ดูบริการของเรา</a>
+            
           </div>
 
           {/* Stats row */}
@@ -167,24 +163,28 @@ export default function Home() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24 }}>
             {SERVICES.map((s, i) => (
               <div key={i} style={{
-                background: '#FFF', borderRadius: 16, padding: 32,
+                background: '#FFF', borderRadius: 16, overflow: 'hidden',
                 border: '1px solid #E4E8EE',
                 transition: 'box-shadow 0.2s',
               }}
                 onMouseEnter={e => e.currentTarget.style.boxShadow = '0 8px 32px rgba(11,31,58,0.12)'}
                 onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
               >
-                <div style={{
-                  width: 52, height: 52, background: '#0B1F3A', borderRadius: 12,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 24, marginBottom: 20,
-                }}>{s.icon}</div>
-                <h3 style={{ fontSize: 20, fontWeight: 600, margin: '0 0 12px' }}>{s.title}</h3>
-                <p style={{ fontSize: 15, color: '#6B7891', lineHeight: 1.7, margin: 0 }}>{s.desc}</p>
-                <div style={{
-                  marginTop: 24, height: 3, width: 40, borderRadius: 999,
-                  background: '#E0A800',
-                }} />
+                <div style={{ width: '100%', aspectRatio: '16/9', overflow: 'hidden', background: '#E4E8EE' }}>
+                  <img
+                    src={s.img}
+                    alt={s.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                </div>
+                <div style={{ padding: 28 }}>
+                  <h3 style={{ fontSize: 20, fontWeight: 600, margin: '0 0 12px' }}>{s.title}</h3>
+                  <p style={{ fontSize: 15, color: '#6B7891', lineHeight: 1.7, margin: 0 }}>{s.desc}</p>
+                  <div style={{
+                    marginTop: 20, height: 3, width: 40, borderRadius: 999,
+                    background: '#E0A800',
+                  }} />
+                </div>
               </div>
             ))}
           </div>
@@ -227,21 +227,27 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Visual placeholder for project images */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {[
-              { label: 'สร้างบ้านใหม่', bg: '#0B1F3A' },
-              { label: 'ต่อเติม', bg: '#1F3358' },
-              { label: 'รีโนเวท', bg: '#162840' },
-              { label: 'ครบจบที่เดียว', bg: '#243C63' },
+              { label: 'สร้างบ้านใหม่', img: 'https://picsum.photos/seed/proj-house/480/360' },
+              { label: 'ต่อเติม',        img: 'https://picsum.photos/seed/proj-ext/480/360' },
+              { label: 'รีโนเวท',        img: 'https://picsum.photos/seed/proj-reno/480/360' },
+              { label: 'ครบจบที่เดียว',  img: 'https://picsum.photos/seed/proj-all/480/360' },
             ].map((item, i) => (
-              <div key={i} style={{
-                background: item.bg, borderRadius: 12,
-                aspectRatio: '4/3', display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', gap: 8,
-              }}>
-                <div style={{ fontSize: 28 }}>🏗️</div>
-                <div style={{ fontSize: 12, color: '#8FA0BD' }}>{item.label}</div>
+              <div key={i} style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', aspectRatio: '4/3' }}>
+                <img
+                  src={item.img}
+                  alt={item.label}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute', inset: 0,
+                  background: 'linear-gradient(to top, rgba(6,15,30,0.75) 0%, transparent 55%)',
+                }} />
+                <div style={{
+                  position: 'absolute', bottom: 12, left: 14,
+                  fontSize: 13, fontWeight: 600, color: '#FFF',
+                }}>{item.label}</div>
               </div>
             ))}
           </div>
