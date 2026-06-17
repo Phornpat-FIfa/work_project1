@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom'
 
 const SERVICES = [
   {
-    img: 'https://picsum.photos/seed/house-new/600/338',
+    img: '/images/Atlanta-Series.webp',
     title: 'สร้างบ้านใหม่',
     desc: 'รับสร้างบ้านพักอาศัยทุกแบบ ควบคุมคุณภาพทุกขั้นตอน ด้วยทีมช่างมืออาชีพ',
   },
   {
-    img: 'https://picsum.photos/seed/extension/600/338',
+    img: '/images/house_tor.jpg',
     title: 'ต่อเติม',
     desc: 'ต่อเติมห้อง ระเบียง ครัว หรือพื้นที่ใช้สอย ออกแบบให้กลมกลืนกับโครงสร้างเดิม',
   },
   {
-    img: 'https://picsum.photos/seed/renovate/600/338',
+    img: '/images/feature_bf.jpg',
     title: 'รีโนเวท',
     desc: 'ปรับปรุงซ่อมแซมบ้านเก่าให้ดูใหม่ เปลี่ยนสไตล์ตามที่ต้องการ ราคาคุ้มค่า',
   },
@@ -174,7 +174,9 @@ export default function Home() {
                   <img
                     src={s.img}
                     alt={s.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease' }}
+                    onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.07)'}
+                    onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
                   />
                 </div>
                 <div style={{ padding: 28 }}>
@@ -229,16 +231,19 @@ export default function Home() {
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             {[
-              { label: 'สร้างบ้านใหม่', img: 'https://picsum.photos/seed/proj-house/480/360' },
-              { label: 'ต่อเติม',        img: 'https://picsum.photos/seed/proj-ext/480/360' },
-              { label: 'รีโนเวท',        img: 'https://picsum.photos/seed/proj-reno/480/360' },
-              { label: 'ครบจบที่เดียว',  img: 'https://picsum.photos/seed/proj-all/480/360' },
+              { label: 'สร้างบ้านใหม่',   img: '/images/Beautiful-House-Design.8.webp' },
+              { label: 'ต่อเติม',          img: '/images/Most_Beautiful_Houses_In_The_World_House_M_featured_on_architecture_beast_39.jpg' },
+              { label: 'รีโนเวท',          img: '/images/photo-1564013799919-ab600027ffc6.avif' },
+              { label: 'ครบจบที่เดียว',   img: '/images/w991x660.jpg' },
             ].map((item, i) => (
-              <div key={i} style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', aspectRatio: '4/3' }}>
+              <div key={i} style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', aspectRatio: '4/3' }}
+                onMouseEnter={e => e.currentTarget.querySelector('img').style.transform = 'scale(1.07)'}
+                onMouseLeave={e => e.currentTarget.querySelector('img').style.transform = 'scale(1)'}
+              >
                 <img
                   src={item.img}
                   alt={item.label}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.4s ease, filter 0.4s ease' }}
                 />
                 <div style={{
                   position: 'absolute', inset: 0,
@@ -342,7 +347,9 @@ export default function Home() {
                 background: '#E0A800', color: '#0B1F3A', fontWeight: 700,
                 padding: '14px', borderRadius: 8, fontSize: 16, border: 'none',
                 cursor: 'pointer', marginTop: 4,
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
               }}>
+                <i className="bi bi-send-fill"></i>
                 ส่งข้อมูล ขอรับการติดต่อ
               </button>
 
@@ -355,7 +362,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer id="ติดต่อเรา" style={{
+      {/* <footer id="ติดต่อเรา" style={{
         background: '#060F1E', color: '#8FA0BD',
         padding: '48px', borderTop: '1px solid #1F3358',
       }}>
@@ -403,7 +410,7 @@ export default function Home() {
           <span>© 2026 SOLID BUILD. สงวนลิขสิทธิ์ทุกประการ</span>
           <Link to="/admin" style={{ color: '#3A537A', textDecoration: 'none' }}>เข้าสู่ระบบ Admin</Link>
         </div>
-      </footer>
+      </footer> */}
     </div>
   )
 }
