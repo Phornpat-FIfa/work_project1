@@ -2,29 +2,29 @@ import { useState, useEffect, useCallback } from 'react'
 
 const INITIAL_RECORDS = [
   { id: 'EXP-2026-0018', project: 'บ้านคุณสมชาย ลาดพร้าว', description: 'ค่ามัดจำเหล็กเส้น', amount: '45,000', date: '14 มิ.ย. 2026', status: 'รออนุมัติ', note: '', imageSrc: null },
-  { id: 'EXP-2026-0017', project: 'บ้านใหม่ ปทุมธานี', description: 'ค่ารถขนของ + ค่าแรงคนงาน', amount: '28,500', date: '13 มิ.ย. 2026', status: 'อนุมัติแล้ว', note: 'รอตรวจสอบใบเสร็จ', imageSrc: null },
-  { id: 'EXP-2026-0016', project: 'รีโนเวทบ้าน บางนา', description: 'สีและอุปกรณ์ทาสีโปรเจค', amount: '18,400', date: '12 มิ.ย. 2026', status: 'จ่ายแล้ว', note: '', imageSrc: null },
-  { id: 'EXP-2026-0015', project: 'บ้านคุณสมชาย ลาดพร้าว', description: 'ค่าประปาชั่วคราวหน้างาน', amount: '8,200', date: '11 มิ.ย. 2026', status: 'จ่ายแล้ว', note: '', imageSrc: null },
+  { id: 'EXP-2026-0017', project: 'บ้านใหม่ ปทุมธานี', description: 'ค่ารถขนของ + ค่าแรงคนงาน', amount: '28,500', date: '13 มิ.ย. 2026', status: 'อนุมัติสำเร็จ', note: 'รอตรวจสอบใบเสร็จ', imageSrc: null },
+  { id: 'EXP-2026-0016', project: 'รีโนเวทบ้าน บางนา', description: 'สีและอุปกรณ์ทาสีโปรเจค', amount: '18,400', date: '12 มิ.ย. 2026', status: 'เบิกจ่ายสำเร็จ', note: '', imageSrc: null },
+  { id: 'EXP-2026-0015', project: 'บ้านคุณสมชาย ลาดพร้าว', description: 'ค่าประปาชั่วคราวหน้างาน', amount: '8,200', date: '11 มิ.ย. 2026', status: 'เบิกจ่ายสำเร็จ', note: '', imageSrc: null },
   { id: 'EXP-2026-0014', project: 'ต่อเติมครัว คุณวิภา', description: 'ค่าออกแบบและเขียนแบบ', amount: '12,000', date: '10 มิ.ย. 2026', status: 'รออนุมัติ', note: '', imageSrc: null },
 ]
 
 const TABS = [
-  { key: 'all', label: 'ทั้งหมด' },
-  { key: 'รออนุมัติ', label: 'รออนุมัติ' },
-  { key: 'อนุมัติแล้ว', label: 'อนุมัติแล้ว' },
-  { key: 'จ่ายแล้ว', label: 'จ่ายแล้ว' },
+  { key: 'รออนุมัติ',    label: 'รออนุมัติ' },
+  { key: 'อนุมัติสำเร็จ', label: 'อนุมัติสำเร็จ' },
+  { key: 'เบิกจ่ายสำเร็จ', label: 'เบิกจ่ายสำเร็จ' },
+  { key: 'all',          label: 'รายการทั้งหมด' },
 ]
 
 function statusStyle(s) {
-  if (s === 'รออนุมัติ') return { bg: '#FFF4D6', color: '#8A6800' }
-  if (s === 'อนุมัติแล้ว') return { bg: '#E8EDF5', color: '#0B1F3A' }
+  if (s === 'รออนุมัติ')    return { bg: '#FFF4D6', color: '#8A6800' }
+  if (s === 'อนุมัติสำเร็จ') return { bg: '#E8EDF5', color: '#0B1F3A' }
   return { bg: '#DCEFE3', color: '#1B6B3F' }
 }
 
 function parseAmt(s) { return parseFloat((s || '0').toString().replace(/,/g, '')) || 0 }
 
 export default function Expenses() {
-  const [tab, setTab] = useState('all')
+  const [tab, setTab] = useState('รออนุมัติ')
   const [selectedId, setSelectedId] = useState(null)
   const [showNew, setShowNew] = useState(false)
   const [lightboxSrc, setLightboxSrc] = useState(null)
@@ -49,8 +49,8 @@ export default function Expenses() {
   const selSt = sel ? statusStyle(sel.status) : { bg: '#F4F5F7', color: '#6B7891' }
 
   const pending = records.filter(r => r.status === 'รออนุมัติ')
-  const approved = records.filter(r => r.status === 'อนุมัติแล้ว')
-  const paid = records.filter(r => r.status === 'จ่ายแล้ว')
+  const approved = records.filter(r => r.status === 'อนุมัติสำเร็จ')
+  const paid = records.filter(r => r.status === 'เบิกจ่ายสำเร็จ')
   const sumOf = arr => '฿' + arr.reduce((s, r) => s + parseAmt(r.amount), 0).toLocaleString()
 
   const filtered = tab === 'all' ? records : records.filter(r => r.status === tab)
@@ -97,8 +97,8 @@ export default function Expenses() {
         {/* Summary widgets */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 14, marginBottom: 20 }}>
           <SummaryCard label="รออนุมัติ" value={sumOf(pending)} sub={`${pending.length} รายการ`} />
-          <SummaryCard label="อนุมัติแล้ว (รอจ่าย)" value={sumOf(approved)} sub={`${approved.length} รายการ`} />
-          <SummaryCard label="จ่ายแล้ว · เดือนนี้" value={sumOf(paid)} sub={`${paid.length} รายการ`} dark />
+          <SummaryCard label="อนุมัติสำเร็จ (รอจ่าย)" value={sumOf(approved)} sub={`${approved.length} รายการ`} />
+          <SummaryCard label="เบิกจ่ายสำเร็จ · เดือนนี้" value={sumOf(paid)} sub={`${paid.length} รายการ`} dark />
         </div>
 
         {/* Tabs */}
@@ -167,6 +167,29 @@ export default function Expenses() {
               <div className="mono" style={{ fontSize: 28, fontWeight: 700 }}>฿{sel.amount}</div>
             </div>
             {sel.note && <div style={{ marginTop: 12, padding: 12, background: '#FFFBEC', border: '1px solid #F0E0A0', borderRadius: 8, fontSize: 13, color: '#5A4200' }}>{sel.note}</div>}
+
+            {/* Action buttons */}
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {sel.status === 'รออนุมัติ' && (
+                <button
+                  onClick={() => setRecords(prev => prev.map(r => r.id === sel.id ? { ...r, status: 'อนุมัติสำเร็จ' } : r))}
+                  style={{ width: '100%', padding: '11px', background: '#0B1F3A', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  อนุมัติรายการนี้ →
+                </button>
+              )}
+              {sel.status === 'อนุมัติสำเร็จ' && (
+                <button
+                  onClick={() => setRecords(prev => prev.map(r => r.id === sel.id ? { ...r, status: 'เบิกจ่ายสำเร็จ' } : r))}
+                  style={{ width: '100%', padding: '11px', background: '#1B6B3F', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  ยืนยันเบิกจ่ายสำเร็จ →
+                </button>
+              )}
+              {sel.status === 'เบิกจ่ายสำเร็จ' && (
+                <div style={{ textAlign: 'center', padding: '10px', background: '#DCEFE3', borderRadius: 8, fontSize: 13, color: '#1B6B3F', fontWeight: 600 }}>
+                  เบิกจ่ายสำเร็จแล้ว
+                </div>
+              )}
+            </div>
           </div>
 
           <div style={{ padding: '16px 24px', flex: 1 }}>

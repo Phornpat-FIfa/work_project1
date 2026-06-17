@@ -21,7 +21,7 @@ const INITIAL_RECORDS = [
     vendor: 'SCG Home',
     date: '12 มิ.ย. 2026',
     total: '245,000',
-    status: 'อนุมัติแล้ว',
+    status: 'อนุมัติสำเร็จ',
     note: 'กรุณาจัดส่งภายใน 3 วัน',
     imageSrc: null,
     items: [
@@ -35,7 +35,7 @@ const INITIAL_RECORDS = [
     vendor: 'ร้านวัสดุพี่นัท',
     date: '11 มิ.ย. 2026',
     total: '32,800',
-    status: 'ได้รับของแล้ว',
+    status: 'รับของสำเร็จ',
     note: '',
     imageSrc: null,
     items: [
@@ -60,16 +60,16 @@ const INITIAL_RECORDS = [
 ]
 
 function statusStyle(status) {
-  if (status === 'รออนุมัติ') return { bg: '#FFF4D6', color: '#8A6800' }
-  if (status === 'อนุมัติแล้ว') return { bg: '#E8EDF5', color: '#0B1F3A' }
+  if (status === 'รออนุมัติ')   return { bg: '#FFF4D6', color: '#8A6800' }
+  if (status === 'อนุมัติสำเร็จ') return { bg: '#E8EDF5', color: '#0B1F3A' }
   return { bg: '#DCEFE3', color: '#1B6B3F' }
 }
 
 const TABS = [
-  { key: 'all', label: 'ทั้งหมด' },
-  { key: 'รออนุมัติ', label: 'รออนุมัติ' },
-  { key: 'อนุมัติแล้ว', label: 'อนุมัติแล้ว' },
-  { key: 'ได้รับของแล้ว', label: 'ได้รับของแล้ว' },
+  { key: 'รออนุมัติ',    label: 'รออนุมัติ' },
+  { key: 'อนุมัติสำเร็จ', label: 'อนุมัติสำเร็จ' },
+  { key: 'รับของสำเร็จ',  label: 'รับของสำเร็จ' },
+  { key: 'all',          label: 'ทั้งหมด' },
 ]
 
 function mkLineTotal(qty, price) {
@@ -79,7 +79,7 @@ function mkLineTotal(qty, price) {
 }
 
 export default function PurchaseOrders() {
-  const [tab, setTab] = useState('all')
+  const [tab, setTab] = useState('รออนุมัติ')
   const [selectedId, setSelectedId] = useState(null)
   const [showNew, setShowNew] = useState(false)
   const [lightboxSrc, setLightboxSrc] = useState(null)
@@ -329,6 +329,29 @@ export default function PurchaseOrders() {
                 {sel.note}
               </div>
             )}
+
+            {/* Action buttons */}
+            <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {sel.status === 'รออนุมัติ' && (
+                <button
+                  onClick={() => setRecords(prev => prev.map(r => r.id === sel.id ? { ...r, status: 'อนุมัติสำเร็จ' } : r))}
+                  style={{ width: '100%', padding: '11px', background: '#0B1F3A', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  อนุมัติ PO นี้ →
+                </button>
+              )}
+              {sel.status === 'อนุมัติสำเร็จ' && (
+                <button
+                  onClick={() => setRecords(prev => prev.map(r => r.id === sel.id ? { ...r, status: 'รับของสำเร็จ' } : r))}
+                  style={{ width: '100%', padding: '11px', background: '#1B6B3F', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  ยืนยันรับของสำเร็จ →
+                </button>
+              )}
+              {sel.status === 'รับของสำเร็จ' && (
+                <div style={{ textAlign: 'center', padding: '10px', background: '#DCEFE3', borderRadius: 8, fontSize: 13, color: '#1B6B3F', fontWeight: 600 }}>
+                  รับของสำเร็จแล้ว
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Line items */}

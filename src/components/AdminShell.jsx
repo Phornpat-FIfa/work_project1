@@ -1,4 +1,7 @@
 import { NavLink } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { auth } from '../firebase'
+import { onAuthStateChanged } from 'firebase/auth'
 
 const NAV_ITEMS = [
   { key: 'overview', label: 'Overview', to: '/dashboard' },
@@ -11,6 +14,17 @@ const NAV_ITEMS = [
 ]
 
 export default function AdminShell() {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, u => setUser(u))
+    return () => unsub()
+  }, [])
+
+  const emailUser = user?.email ? user.email.split('@')[0] : 'admin'
+  const displayName = `${emailUser}@admin`
+  const avatar = emailUser[0].toUpperCase()
+
   return (
     <aside style={{
       background: '#0B1F3A',
@@ -70,9 +84,9 @@ export default function AdminShell() {
             width: 28, height: 28, background: '#E0A800', borderRadius: '50%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             color: '#0B1F3A', fontWeight: 600, fontSize: 12,
-          }}>A</div>
+          }}>{avatar}</div>
           <div>
-            <div style={{ fontWeight: 500 }}>admin@solidbuild</div>
+            <div style={{ fontWeight: 500 }}>{displayName}</div>
             <div style={{ color: '#8FA0BD', fontSize: 11 }}>Single role</div>
           </div>
         </div>

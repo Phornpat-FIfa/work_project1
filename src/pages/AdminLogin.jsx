@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from '../firebase'
+
+const COMPANY_ID = 'SOLID171401'
 
 export default function AdminLogin() {
   const navigate = useNavigate()
@@ -9,29 +13,48 @@ export default function AdminLogin() {
   const [register, setRegister] = useState({ email: '', password: '', confirm: '', companyId: '' })
   const [loginError, setLoginError] = useState('')
   const [registerError, setRegisterError] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault()
     setLoginError('')
-    if (!login.email || !login.password) {
-      setLoginError('กรุณากรอกอีเมลและรหัสผ่าน')
-      return
+    setLoading(true)
+    try {
+      await signInWithEmailAndPassword(auth, login.email, login.password)
+      navigate('/dashboard')
+    } catch (err) {
+      setLoginError('อีเมลหรือรหัสผ่านไม่ถูกต้อง')
+    } finally {
+      setLoading(false)
     }
-    navigate('/dashboard')
   }
 
-  function handleRegister(e) {
+  async function handleRegister(e) {
     e.preventDefault()
     setRegisterError('')
     if (register.password !== register.confirm) {
       setRegisterError('รหัสผ่านไม่ตรงกัน')
       return
     }
-    if (register.companyId !== 'SOLID2026') {
+    if (register.companyId !== COMPANY_ID) {
       setRegisterError('Company ID ไม่ถูกต้อง')
       return
     }
-    navigate('/dashboard')
+    setLoading(true)
+    try {
+      await createUserWithEmailAndPassword(auth, register.email, register.password)
+      navigate('/dashboard')
+    } catch (err) {
+      if (err.code === 'auth/email-already-in-use') {
+        setRegisterError('อีเมลนี้ถูกใช้งานแล้ว')
+      } else if (err.code === 'auth/weak-password') {
+        setRegisterError('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร')
+      } else {
+        setRegisterError('เกิดข้อผิดพลาด กรุณาลองใหม่')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -124,8 +147,8 @@ export default function AdminLogin() {
                 </div>
               )}
 
-              <button type="submit" style={btnStyle}>
-                เข้าสู่ระบบ
+              <button type="submit" disabled={loading} style={{ ...btnStyle, opacity: loading ? 0.7 : 1 }}>
+                {loading ? 'กำลังเข้าสู่ระบบ...' : 'เข้าสู่ระบบ'}
               </button>
 
               <div style={{ textAlign: 'center', fontSize: 13, color: '#8FA0BD' }}>
@@ -184,8 +207,8 @@ export default function AdminLogin() {
                 </div>
               )}
 
-              <button type="submit" style={btnStyle}>
-                สมัครสมาชิก
+              <button type="submit" disabled={loading} style={{ ...btnStyle, opacity: loading ? 0.7 : 1 }}>
+                {loading ? 'กำลังสมัคร...' : 'สมัครสมาชิก'}
               </button>
 
               <div style={{ textAlign: 'center', fontSize: 13, color: '#8FA0BD' }}>
