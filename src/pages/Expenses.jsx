@@ -29,7 +29,12 @@ export default function Expenses() {
   const [showNew, setShowNew] = useState(false)
   const [lightboxSrc, setLightboxSrc] = useState(null)
   const [uploadedImages, setUploadedImages] = useState({})
-  const [records, setRecords] = useState(INITIAL_RECORDS)
+  const [records, setRecords] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sb_exp_records_v1')
+      return saved ? JSON.parse(saved) : INITIAL_RECORDS
+    } catch (_) { return INITIAL_RECORDS }
+  })
 
   const [nfProject, setNfProject] = useState('')
   const [nfDesc, setNfDesc] = useState('')
@@ -41,6 +46,10 @@ export default function Expenses() {
   useEffect(() => {
     try { const s = localStorage.getItem('sb_exp_imgs_v2'); if (s) setUploadedImages(JSON.parse(s)) } catch (_) {}
   }, [])
+
+  useEffect(() => {
+    try { localStorage.setItem('sb_exp_records_v1', JSON.stringify(records)) } catch (_) {}
+  }, [records])
 
   const saveImages = useCallback(imgs => { try { localStorage.setItem('sb_exp_imgs_v2', JSON.stringify(imgs)) } catch (_) {} }, [])
 
@@ -81,7 +90,6 @@ export default function Expenses() {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
-      <div className="mono" style={{ position: 'fixed', top: 16, right: 16, zIndex: 50, padding: '6px 12px', background: '#0B1F3A', color: '#FFF', fontSize: 11, letterSpacing: '0.1em', borderRadius: 999 }}>/expenses</div>
 
       {/* Table */}
       <div style={{ flex: 1, overflowY: 'auto', minWidth: 0, padding: '32px 40px' }}>

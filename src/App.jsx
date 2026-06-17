@@ -5,7 +5,6 @@ import Dashboard from './pages/Dashboard'
 import Projects from './pages/Projects'
 import Expenses from './pages/Expenses'
 import Reports from './pages/Reports'
-import History from './pages/History'
 import Leads from './pages/Leads'
 import Home from './pages/Home'
 import AdminLogin from './pages/AdminLogin'
@@ -31,7 +30,6 @@ export default function App() {
           <Route path="/po" element={<PurchaseOrders />} />
           <Route path="/expenses" element={<Expenses />} />
           <Route path="/reports" element={<Reports />} />
-          <Route path="/history" element={<History />} />
           <Route path="/leads" element={<Leads />} />
         </Route>
       </Routes>

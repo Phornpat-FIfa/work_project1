@@ -84,7 +84,16 @@ export default function PurchaseOrders() {
   const [showNew, setShowNew] = useState(false)
   const [lightboxSrc, setLightboxSrc] = useState(null)
   const [uploadedImages, setUploadedImages] = useState({})
-  const [records, setRecords] = useState(INITIAL_RECORDS)
+  const [records, setRecords] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sb_po_records_v1')
+      return saved ? JSON.parse(saved) : INITIAL_RECORDS
+    } catch (_) { return INITIAL_RECORDS }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('sb_po_records_v1', JSON.stringify(records)) } catch (_) {}
+  }, [records])
 
   // new PO form state
   const [nfProject, setNfProject] = useState('')
@@ -181,12 +190,6 @@ export default function PurchaseOrders() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', overflow: 'hidden' }}>
 
-      {/* ── Route badge ── */}
-      <div className="mono" style={{
-        position: 'fixed', top: 16, right: 16, zIndex: 50,
-        padding: '6px 12px', background: '#0B1F3A', color: '#FFF',
-        fontSize: 11, letterSpacing: '0.1em', borderRadius: 999,
-      }}>/po</div>
 
       {/* ── Table section ── */}
       <div style={{ flex: 1, overflowY: 'auto', minWidth: 0, padding: '32px 40px' }}>

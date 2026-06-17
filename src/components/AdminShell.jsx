@@ -9,7 +9,6 @@ const NAV_ITEMS = [
   { key: 'po', label: 'ใบสั่งซื้อ', to: '/po' },
   { key: 'expenses', label: 'เบิกจ่าย', to: '/expenses' },
   { key: 'reports', label: 'รายงานสรุป', to: '/reports' },
-  { key: 'history', label: 'ประวัติการทำรายการ', to: '/history' },
   { key: 'leads', label: 'Lead ลูกค้า', to: '/leads' },
 ]
 

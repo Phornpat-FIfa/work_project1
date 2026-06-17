@@ -15,14 +15,13 @@ const LEADS = [
 export default function Leads() {
   return (
     <main style={{ padding: '32px 40px' }}>
-      <div className="mono" style={{ position: 'fixed', top: 16, right: 16, zIndex: 50, padding: '6px 12px', background: '#0B1F3A', color: '#FFF', fontSize: 11, letterSpacing: '0.1em', borderRadius: 999 }}>/leads</div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
           <div className="mono" style={{ fontSize: 11, letterSpacing: '0.15em', color: '#6B7891', marginBottom: 4 }}>LEADS · FROM LANDING PAGE</div>
           <h1 style={{ fontSize: 32, fontWeight: 600, margin: 0, letterSpacing: '-0.01em' }}>Lead ลูกค้า</h1>
         </div>
-        <button style={{ padding: '10px 16px', background: '#FFF', color: '#0B1F3A', border: '1px solid #E4E8EE', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>↓ Export</button>
+        {/* <button style={{ padding: '10px 16px', background: '#FFF', color: '#0B1F3A', border: '1px solid #E4E8EE', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'inherit' }}>↓ Export</button> */}
       </div>
 
       {/* Stats */}

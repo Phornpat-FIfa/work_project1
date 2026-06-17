@@ -1,17 +1,59 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 
-const PROJECTS = [
-  { name: 'บ้านคุณสมชาย ลาดพร้าว', client: 'สมชาย ใจดี', budget: '฿3,200,000', pct: 65, status: 'กำลังดำเนินการ', stBg: '#E8EDF5', stColor: '#0B1F3A' },
-  { name: 'ต่อเติมครัว คุณวิภา', client: 'วิภา ศรีสุข', budget: '฿480,000', pct: 90, status: 'กำลังดำเนินการ', stBg: '#E8EDF5', stColor: '#0B1F3A' },
-  { name: 'รีโนเวทบ้าน บางนา', client: 'ปิยะ มากสุข', budget: '฿1,750,000', pct: 35, status: 'หยุดพัก', stBg: '#FFF4D6', stColor: '#8A6800' },
-  { name: 'บ้านใหม่ ปทุมธานี', client: 'ก้องเกียรติ', budget: '฿4,800,000', pct: 12, status: 'กำลังดำเนินการ', stBg: '#E8EDF5', stColor: '#0B1F3A' },
-  { name: 'ห้องนอนเพิ่ม ราชพฤกษ์', client: 'นภัส ดวงดี', budget: '฿320,000', pct: 100, status: 'เสร็จแล้ว', stBg: '#DCEFE3', stColor: '#1B6B3F' },
-]
+const STATUS_STYLE = {
+  'กำลังดำเนินการ': { stBg: '#E8EDF5', stColor: '#0B1F3A' },
+  'หยุดพัก':        { stBg: '#FFF4D6', stColor: '#8A6800' },
+  'เสร็จแล้ว':      { stBg: '#DCEFE3', stColor: '#1B6B3F' },
+}
+
+function fmtBudget(n) {
+  const num = Number(n)
+  if (num >= 1000000) return `฿${(num / 1000000).toFixed(2)}M`
+  if (num >= 1000) return `฿${(num / 1000).toFixed(0)}K`
+  return `฿${num.toLocaleString()}`
+}
+
+function pct(used, total) {
+  if (!total) return 0
+  return Math.min(100, Math.round((used / total) * 100))
+}
+
+function loadLS(key, fallback) {
+  try {
+    const s = localStorage.getItem(key)
+    return s ? JSON.parse(s) : fallback
+  } catch (_) { return fallback }
+}
 
 export default function Dashboard() {
+  const [projects, setProjects] = useState([])
+  const [poRecords, setPoRecords] = useState([])
+
+  useEffect(() => {
+    setProjects(loadLS('sb_projects_v1', []))
+    setPoRecords(loadLS('sb_po_records_v1', []))
+
+    function onStorage(e) {
+      if (e.key === 'sb_projects_v1') setProjects(loadLS('sb_projects_v1', []))
+      if (e.key === 'sb_po_records_v1') setPoRecords(loadLS('sb_po_records_v1', []))
+    }
+    window.addEventListener('storage', onStorage)
+    return () => window.removeEventListener('storage', onStorage)
+  }, [])
+
+  const activeCount = projects.filter(p => p.status === 'กำลังดำเนินการ').length
+  const poWaiting = poRecords.filter(r => r.status === 'รออนุมัติ').length
+  const poWaitingTotal = poRecords
+    .filter(r => r.status === 'รออนุมัติ')
+    .reduce((s, r) => s + (parseFloat((r.total || '0').replace(/,/g, '')) || 0), 0)
+
+  const recent = [...projects].sort((a, b) => b.id - a.id).slice(0, 5)
+
+  const today = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' })
+
   return (
     <main style={{ padding: '32px 40px' }}>
-      <div className="mono" style={{ position: 'fixed', top: 16, right: 16, zIndex: 50, padding: '6px 12px', background: '#0B1F3A', color: '#FFF', fontSize: 11, letterSpacing: '0.1em', borderRadius: 999 }}>/dashboard</div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
@@ -31,16 +73,33 @@ export default function Dashboard() {
           >
             ← กลับหน้าหลัก
           </Link>
-          <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>16 มิ.ย. 2026 · อังคาร</div>
+          <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>{today}</div>
         </div>
       </div>
 
       {/* Stat widgets */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 24 }}>
-        <Widget label="โครงการกำลังดำเนินการ" value="8" sub="+2 จากเดือนที่แล้ว" />
-        <Widget label="เบิกจ่ายรอดำเนินการ" value="฿245,800" sub="5 รายการ" />
-        <Widget label="PO รออนุมัติ" value="12" sub="รวม ฿1.2M" />
-        <Widget label="LEAD ใหม่วันนี้" value="3" sub="ติดต่อแล้ว 1 · รออีก 2" dark />
+        <Widget
+          label="โครงการกำลังดำเนินการ"
+          value={String(activeCount)}
+          sub={`ทั้งหมด ${projects.length} โครงการ`}
+        />
+        <Widget
+          label="โครงการเสร็จแล้ว"
+          value={String(projects.filter(p => p.status === 'เสร็จแล้ว').length)}
+          sub={`หยุดพัก ${projects.filter(p => p.status === 'หยุดพัก').length} โครงการ`}
+        />
+        <Widget
+          label="PO รออนุมัติ"
+          value={String(poWaiting)}
+          sub={poWaiting > 0 ? `รวม ${fmtBudget(poWaitingTotal)}` : 'ไม่มีรอดำเนินการ'}
+        />
+        <Widget
+          label="งบรวมทุกโครงการ"
+          value={fmtBudget(projects.reduce((s, p) => s + (p.budgetTotal || 0), 0))}
+          sub={`ใช้ไป ${fmtBudget(projects.reduce((s, p) => s + (p.budgetUsed || 0), 0))}`}
+          dark
+        />
       </div>
 
       {/* Recent projects */}
@@ -48,39 +107,50 @@ export default function Dashboard() {
         <div style={{ padding: '20px 24px', borderBottom: '1px solid #E4E8EE', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>โครงการล่าสุด</h2>
-            <div style={{ fontSize: 13, color: '#6B7891', marginTop: 2 }}>5 รายการ</div>
+            <div style={{ fontSize: 13, color: '#6B7891', marginTop: 2 }}>{recent.length} รายการ</div>
           </div>
           <Link to="/projects" style={{ fontSize: 13, color: '#0B1F3A', fontWeight: 500, textDecoration: 'none' }}>ดูทั้งหมด →</Link>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#F4F5F7' }}>
-              {['โครงการ', 'ลูกค้า', 'งบ', 'ความคืบหน้า', 'สถานะ'].map(h => (
-                <th key={h} className="mono" style={{ textAlign: 'left', padding: h === 'โครงการ' ? '12px 24px' : '12px 16px', fontSize: 11, fontWeight: 500, color: '#6B7891', letterSpacing: '0.1em' }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody style={{ fontSize: 14 }}>
-            {PROJECTS.map(p => (
-              <tr key={p.name} style={{ borderTop: '1px solid #E4E8EE' }}>
-                <td style={{ padding: '14px 24px', fontWeight: 500 }}>{p.name}</td>
-                <td style={{ padding: '14px 16px', color: '#38465E' }}>{p.client}</td>
-                <td className="mono" style={{ padding: '14px 16px' }}>{p.budget}</td>
-                <td style={{ padding: '14px 16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 100, height: 6, background: '#E4E8EE', borderRadius: 999, overflow: 'hidden' }}>
-                      <div style={{ width: `${p.pct}%`, height: '100%', background: '#0B1F3A' }} />
-                    </div>
-                    <span className="mono" style={{ fontSize: 12 }}>{p.pct}%</span>
-                  </div>
-                </td>
-                <td style={{ padding: '14px 16px' }}>
-                  <span style={{ padding: '4px 10px', background: p.stBg, color: p.stColor, fontSize: 12, borderRadius: 999 }}>{p.status}</span>
-                </td>
+
+        {recent.length === 0 ? (
+          <div style={{ padding: '40px 24px', textAlign: 'center', color: '#6B7891', fontSize: 14 }}>
+            ยังไม่มีโครงการ <Link to="/projects" style={{ color: '#0B1F3A', fontWeight: 500 }}>เพิ่มโครงการ →</Link>
+          </div>
+        ) : (
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ background: '#F4F5F7' }}>
+                {['โครงการ', 'ลูกค้า', 'งบ', 'ความคืบหน้า', 'สถานะ'].map(h => (
+                  <th key={h} className="mono" style={{ textAlign: 'left', padding: h === 'โครงการ' ? '12px 24px' : '12px 16px', fontSize: 11, fontWeight: 500, color: '#6B7891', letterSpacing: '0.1em' }}>{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody style={{ fontSize: 14 }}>
+              {recent.map(p => {
+                const progress = pct(p.budgetUsed, p.budgetTotal)
+                const { stBg, stColor } = STATUS_STYLE[p.status] || STATUS_STYLE['กำลังดำเนินการ']
+                return (
+                  <tr key={p.id} style={{ borderTop: '1px solid #E4E8EE' }}>
+                    <td style={{ padding: '14px 24px', fontWeight: 500 }}>{p.name}</td>
+                    <td style={{ padding: '14px 16px', color: '#38465E' }}>{p.client}</td>
+                    <td className="mono" style={{ padding: '14px 16px' }}>{fmtBudget(p.budgetTotal)}</td>
+                    <td style={{ padding: '14px 16px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div style={{ width: 100, height: 6, background: '#E4E8EE', borderRadius: 999, overflow: 'hidden' }}>
+                          <div style={{ width: `${progress}%`, height: '100%', background: '#0B1F3A' }} />
+                        </div>
+                        <span className="mono" style={{ fontSize: 12 }}>{progress}%</span>
+                      </div>
+                    </td>
+                    <td style={{ padding: '14px 16px' }}>
+                      <span style={{ padding: '4px 10px', background: stBg, color: stColor, fontSize: 12, borderRadius: 999 }}>{p.status}</span>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </main>
   )

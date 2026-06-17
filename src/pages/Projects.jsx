@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const STATUS_STYLE = {
   'กำลังดำเนินการ': { stBg: '#E8EDF5', stColor: '#0B1F3A' },
@@ -64,7 +64,16 @@ const EMPTY_FORM = {
 }
 
 export default function Projects() {
-  const [projects, setProjects] = useState(INIT_PROJECTS)
+  const [projects, setProjects] = useState(() => {
+    try {
+      const saved = localStorage.getItem('sb_projects_v1')
+      return saved ? JSON.parse(saved) : INIT_PROJECTS
+    } catch (_) { return INIT_PROJECTS }
+  })
+
+  useEffect(() => {
+    try { localStorage.setItem('sb_projects_v1', JSON.stringify(projects)) } catch (_) {}
+  }, [projects])
   const [search, setSearch] = useState('')
   const [typeFilter, setTypeFilter] = useState('ทุกประเภทงาน')
   const [statusFilter, setStatusFilter] = useState('ทุกสถานะ')
@@ -72,6 +81,7 @@ export default function Projects() {
   const [formOpen, setFormOpen] = useState(false)
   const [editTarget, setEditTarget] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [deleteTarget, setDeleteTarget] = useState(null)
 
   const filtered = projects.filter(p => {
     const matchSearch = !search || p.name.includes(search) || p.client.includes(search)
@@ -93,6 +103,12 @@ export default function Projects() {
     setFormOpen(true)
   }
 
+  function handleDelete(id) {
+    setProjects(prev => prev.filter(p => p.id !== id))
+    setDeleteTarget(null)
+    setSelected(null)
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     const data = {
@@ -110,7 +126,6 @@ export default function Projects() {
 
   return (
     <main style={{ padding: '32px 40px' }}>
-      <div className="mono" style={{ position: 'fixed', top: 16, right: 16, zIndex: 50, padding: '6px 12px', background: '#0B1F3A', color: '#FFF', fontSize: 11, letterSpacing: '0.1em', borderRadius: 999 }}>/projects</div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div>
@@ -176,10 +191,16 @@ export default function Projects() {
                     <span style={{ padding: '4px 10px', background: stBg, color: stColor, fontSize: 12, borderRadius: 999 }}>{p.status}</span>
                   </td>
                   <td style={{ padding: '14px 16px' }}>
-                    <button onClick={() => setSelected(p)}
-                      style={{ padding: '6px 14px', background: '#F4F5F7', border: '1px solid #E4E8EE', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', color: '#0B1F3A', fontWeight: 500 }}>
-                      รายละเอียด
-                    </button>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button onClick={() => setSelected(p)}
+                        style={{ padding: '6px 14px', background: '#F4F5F7', border: '1px solid #E4E8EE', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', color: '#0B1F3A', fontWeight: 500 }}>
+                        รายละเอียด
+                      </button>
+                      <button onClick={() => setDeleteTarget(p)}
+                        style={{ padding: '6px 12px', background: '#FFF5F5', border: '1px solid #FECACA', borderRadius: 6, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit', color: '#DC2626', fontWeight: 500 }}>
+                        ลบ
+                      </button>
+                    </div>
                   </td>
                 </tr>
               )
@@ -239,14 +260,45 @@ export default function Projects() {
               <div style={{ marginTop: 16 }}><DetailRow label="ที่อยู่/สถานที่" value={selected.address} /></div>
               {selected.note && <div style={{ marginTop: 16 }}><DetailRow label="หมายเหตุ" value={selected.note} /></div>}
 
-              <button onClick={() => openEdit(selected)}
-                style={{ marginTop: 24, width: '100%', padding: '12px', background: '#0B1F3A', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
-                แก้ไขโครงการ
-              </button>
+              <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+                <button onClick={() => openEdit(selected)}
+                  style={{ flex: 1, padding: '12px', background: '#0B1F3A', color: '#FFF', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' }}>
+                  แก้ไขโครงการ
+                </button>
+                <button onClick={() => setDeleteTarget(selected)}
+                  style={{ padding: '12px 20px', background: '#FFF5F5', border: '1px solid #FECACA', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#DC2626' }}>
+                  ลบโครงการ
+                </button>
+              </div>
             </div>
           </div>
         )
       })()}
+
+      {/* Delete Confirmation Modal */}
+      {deleteTarget && (
+        <div onClick={() => setDeleteTarget(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(6,15,30,0.5)', zIndex: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: '#FFF', borderRadius: 16, width: '100%', maxWidth: 400, padding: 32, textAlign: 'center' }}>
+            <div style={{ width: 48, height: 48, background: '#FFF5F5', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, margin: '0 auto 16px' }}>🗑</div>
+            <h3 style={{ fontSize: 18, fontWeight: 700, margin: '0 0 8px', color: '#0B1F3A' }}>ลบโครงการ?</h3>
+            <p style={{ fontSize: 14, color: '#6B7891', margin: '0 0 24px', lineHeight: 1.6 }}>
+              ต้องการลบ <strong style={{ color: '#0B1F3A' }}>{deleteTarget.name}</strong> ออกจากระบบ? การกระทำนี้ไม่สามารถย้อนกลับได้
+            </p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setDeleteTarget(null)}
+                style={{ flex: 1, padding: '11px', background: '#F4F5F7', border: '1px solid #E4E8EE', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#0B1F3A' }}>
+                ยกเลิก
+              </button>
+              <button onClick={() => handleDelete(deleteTarget.id)}
+                style={{ flex: 1, padding: '11px', background: '#DC2626', border: 'none', borderRadius: 8, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit', color: '#FFF' }}>
+                ลบโครงการ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add / Edit Form Modal */}
       {formOpen && (
