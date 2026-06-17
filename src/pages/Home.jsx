@@ -284,9 +284,9 @@ export default function Home() {
           ) : (
             <form onSubmit={handleSubmit} style={{
               background: '#1F3358', borderRadius: 16, padding: 40,
-              border: '1px solid #3A537A', display: 'flex', flexDirection: 'column', gap: 20,
+              border: '1px solid #3A537A',
             }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
                 <FormField label="ชื่อ-นามสกุล" required>
                   <input
                     type="text" name="name" value={form.name} onChange={handleChange}
@@ -303,7 +303,7 @@ export default function Home() {
                 </FormField>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
                 <FormField label="ประเภทงาน" required>
                   <select name="workType" value={form.workType} onChange={handleChange} required style={inputStyle}>
                     <option value="">เลือกประเภทงาน</option>
@@ -318,21 +318,25 @@ export default function Home() {
                 </FormField>
               </div>
 
-              <FormField label="งบประมาณโดยประมาณ">
-                <select name="budget" value={form.budget} onChange={handleChange} style={inputStyle}>
-                  <option value="">เลือกช่วงงบประมาณ</option>
-                  {BUDGET_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              </FormField>
+              <div style={{ marginBottom: 32 }}>
+                <FormField label="งบประมาณโดยประมาณ">
+                  <select name="budget" value={form.budget} onChange={handleChange} style={inputStyle}>
+                    <option value="">เลือกช่วงงบประมาณ</option>
+                    {BUDGET_OPTIONS.map(o => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                </FormField>
+              </div>
 
-              <FormField label="รายละเอียดเพิ่มเติม">
-                <textarea
-                  name="detail" value={form.detail} onChange={handleChange}
-                  placeholder="บอกเล่าความต้องการของคุณ เช่น ขนาดพื้นที่ รายละเอียดงาน..."
-                  rows={4}
-                  style={{ ...inputStyle, resize: 'vertical', minHeight: 100 }}
-                />
-              </FormField>
+              <div style={{ marginBottom: 32 }}>
+                <FormField label="รายละเอียดเพิ่มเติม">
+                  <textarea
+                    name="detail" value={form.detail} onChange={handleChange}
+                    placeholder="บอกเล่าความต้องการของคุณ เช่น ขนาดพื้นที่ รายละเอียดงาน..."
+                    rows={4}
+                    style={{ ...inputStyle, resize: 'vertical', minHeight: 100 }}
+                  />
+                </FormField>
+              </div>
 
               <button type="submit" style={{
                 background: '#E0A800', color: '#0B1F3A', fontWeight: 700,
@@ -406,8 +410,8 @@ export default function Home() {
 
 function FormField({ label, required, children }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-      <label style={{ fontSize: 13, color: '#B8C4DA', fontWeight: 500 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <label style={{ fontSize: 14, color: '#B8C4DA', fontWeight: 600, marginBottom: 10 }}>
         {label}{required && <span style={{ color: '#E0A800', marginLeft: 4 }}>*</span>}
       </label>
       {children}
@@ -417,6 +421,6 @@ function FormField({ label, required, children }) {
 
 const inputStyle = {
   background: '#0B1F3A', border: '1px solid #3A537A', borderRadius: 8,
-  padding: '10px 14px', color: '#FFF', fontSize: 14, outline: 'none',
+  padding: '14px 16px', color: '#FFF', fontSize: 14, outline: 'none',
   width: '100%',
 }
