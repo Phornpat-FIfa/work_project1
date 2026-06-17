@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { db } from '../firebase'
 
 const SERVICES = [
   {
@@ -35,14 +37,38 @@ export default function Home() {
     name: '', phone: '', workType: '', style: '', budget: '', detail: '',
   })
   const [submitted, setSubmitted] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
   function handleChange(e) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setSubmitted(true)
+    setLoading(true)
+    setError('')
+    const data = {
+      name: e.target.name.value,
+      phone: e.target.phone.value,
+      workType: e.target.workType.value,
+      style: e.target.style.value,
+      budget: e.target.budget.value,
+      detail: e.target.detail.value,
+    }
+    try {
+      await addDoc(collection(db, 'leads'), {
+        ...data,
+        status: 'ยังไม่ติดต่อ',
+        createdAt: serverTimestamp(),
+      })
+      setSubmitted(true)
+    } catch (err) {
+      console.error('Firestore error:', err)
+      setError('เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง (' + err.code + ')')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -343,15 +369,20 @@ export default function Home() {
                 </FormField>
               </div>
 
-              <button type="submit" style={{
-                background: '#E0A800', color: '#0B1F3A', fontWeight: 700,
+              <button type="submit" disabled={loading} style={{
+                background: loading ? '#a07800' : '#E0A800', color: '#0B1F3A', fontWeight: 700,
                 padding: '14px', borderRadius: 8, fontSize: 16, border: 'none',
-                cursor: 'pointer', marginTop: 4,
+                cursor: loading ? 'not-allowed' : 'pointer', marginTop: 4,
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                width: '100%',
               }}>
                 <i className="bi bi-send-fill"></i>
-                ส่งข้อมูล ขอรับการติดต่อ
+                {loading ? 'กำลังส่งข้อมูล...' : 'ส่งข้อมูล ขอรับการติดต่อ'}
               </button>
+
+              {error && (
+                <p style={{ color: '#FF6B6B', fontSize: 13, textAlign: 'center', margin: '8px 0 0' }}>{error}</p>
+              )}
 
               <p style={{ color: '#8FA0BD', fontSize: 12, textAlign: 'center', margin: 0 }}>
                 ข้อมูลของคุณจะถูกเก็บเป็นความลับ ไม่มีการนำไปใช้เพื่อวัตถุประสงค์อื่น

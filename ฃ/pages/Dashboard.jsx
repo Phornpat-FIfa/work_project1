@@ -1,7 +1,4 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
-import { db } from '../firebase'
 
 const PROJECTS = [
   { name: 'บ้านคุณสมชาย ลาดพร้าว', client: 'สมชาย ใจดี', budget: '฿3,200,000', pct: 65, status: 'กำลังดำเนินการ', stBg: '#E8EDF5', stColor: '#0B1F3A' },
@@ -11,27 +8,7 @@ const PROJECTS = [
   { name: 'ห้องนอนเพิ่ม ราชพฤกษ์', client: 'นภัส ดวงดี', budget: '฿320,000', pct: 100, status: 'เสร็จแล้ว', stBg: '#DCEFE3', stColor: '#1B6B3F' },
 ]
 
-function isToday(ts) {
-  if (!ts) return false
-  const d = ts.toDate ? ts.toDate() : new Date(ts)
-  const now = new Date()
-  return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth() && d.getDate() === now.getDate()
-}
-
-const TODAY = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', weekday: 'long' })
-
 export default function Dashboard() {
-  const [leads, setLeads] = useState([])
-
-  useEffect(() => {
-    const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'))
-    return onSnapshot(q, snap => setLeads(snap.docs.map(d => ({ id: d.id, ...d.data() }))))
-  }, [])
-
-  const todayLeads = leads.filter(l => isToday(l.createdAt))
-  const todayContacted = todayLeads.filter(l => l.status === 'ติดต่อแล้ว').length
-  const todayPending = todayLeads.filter(l => l.status === 'ยังไม่ติดต่อ').length
-
   return (
     <main style={{ padding: '32px 40px' }}>
       <div className="mono" style={{ position: 'fixed', top: 16, right: 16, zIndex: 50, padding: '6px 12px', background: '#0B1F3A', color: '#FFF', fontSize: 11, letterSpacing: '0.1em', borderRadius: 999 }}>/dashboard</div>
@@ -54,7 +31,7 @@ export default function Dashboard() {
           >
             ← กลับหน้าหลัก
           </Link>
-          <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>{TODAY}</div>
+          <div className="mono" style={{ fontSize: 13, color: '#6B7891' }}>16 มิ.ย. 2026 · อังคาร</div>
         </div>
       </div>
 
@@ -63,7 +40,7 @@ export default function Dashboard() {
         <Widget label="โครงการกำลังดำเนินการ" value="8" sub="+2 จากเดือนที่แล้ว" />
         <Widget label="เบิกจ่ายรอดำเนินการ" value="฿245,800" sub="5 รายการ" />
         <Widget label="PO รออนุมัติ" value="12" sub="รวม ฿1.2M" />
-        <Widget label="LEAD ใหม่วันนี้" value={todayLeads.length} sub={`ติดต่อแล้ว ${todayContacted} · รออีก ${todayPending}`} dark />
+        <Widget label="LEAD ใหม่วันนี้" value="3" sub="ติดต่อแล้ว 1 · รออีก 2" dark />
       </div>
 
       {/* Recent projects */}
